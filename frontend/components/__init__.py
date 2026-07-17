@@ -1,0 +1,1 @@
+"""Componentes reutilizables del frontend (generadores SVG, etc.)."""

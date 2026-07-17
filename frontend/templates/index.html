@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor de Tableros</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <div class="app">
+
+        <!-- HEADER — horario de actualizacion con protagonismo -->
+        <header class="hdr">
+            <div class="hdr__left">
+                <div class="hdr__brand">
+                    <h1 class="hdr__title">Monitor de Tableros</h1>
+                    <span class="hdr__subtitle">Monitoreo de actualizacion</span>
+                </div>
+            </div>
+            <div class="hdr__center">
+                <span class="hdr__update-label">Ultima actualizacion</span>
+                <span class="hdr__update-time" id="dc-ultima-consulta" aria-live="polite">cargando...</span>
+            </div>
+            <div class="hdr__right">
+                <div class="theme-toggle" id="dc-theme-toggle" role="group" aria-label="Modo de color">
+                    <button class="theme-btn" data-theme="light" aria-label="Modo claro" title="Claro">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M2.8 2.8l1 1M10.2 10.2l1 1M2.8 11.2l1-1M10.2 3.8l1-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </button>
+                    <button class="theme-btn" data-theme="auto" aria-label="Modo automatico" title="Automatico (segun horario)">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.5"/><path d="M7 4v3l2.5 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <button class="theme-btn" data-theme="dark" aria-label="Modo oscuro" title="Oscuro">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M11.5 8.5A5 5 0 0 1 5.5 2.5a5 5 0 1 0 6 6z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                    </button>
+                </div>
+                <button class="btn" id="dc-btn-actualizar" type="button" aria-label="Actualizar">
+                    <svg class="btn__icon" id="dc-btn-icon" width="14" height="14" viewBox="0 0 15 15" fill="none" aria-hidden="true">
+                        <path d="M7.5 1.5a6 6 0 1 0 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M7.5 4V1.5L9.8 3.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="btn__text">Actualizar</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- LAYOUT: main + sidebar -->
+        <div class="layout">
+
+            <!-- MAIN: secciones de tableros -->
+            <main class="main">
+                <section class="sec sec--late">
+                    <h2 class="sec__title">Atrasados <span class="sec__count" id="dc-late-count">0</span></h2>
+                    <div class="sec__list" id="dc-late-list"></div>
+                </section>
+
+                <section class="sec sec--ok">
+                    <h2 class="sec__title">Al dia <span class="sec__count sec__count--ok" id="dc-ok-count">0</span></h2>
+                    <div class="sec__list" id="dc-ok-list"></div>
+                </section>
+
+                <footer class="ftr">
+                    <span id="dc-footer-meta">—</span>
+                    <span class="ftr__sep">·</span>
+                    <span id="dc-next-refresh">prox. --</span>
+                </footer>
+            </main>
+
+            <!-- SIDEBAR: hora + calendario -->
+            <aside class="sidebar">
+
+                <!-- Hora actual -->
+                <div class="widget widget--clock">
+                    <div class="clock">
+                        <div class="clock__time" id="dc-clock-time">
+                            <span class="clock__hm" id="dc-clock-hm">
+                                <span id="dc-clock-hh">--</span><span class="clock__colon" aria-hidden="true">:</span><span id="dc-clock-mm">--</span>
+                            </span>
+                        </div>
+                        <div class="clock__secs" id="dc-clock-secs">--</div>
+                    </div>
+                    <div class="clock__date" id="dc-clock-date">—</div>
+                </div>
+
+                <!-- Calendario -->
+                <div class="widget widget--cal">
+                    <div class="cal">
+                        <div class="cal__header">
+                            <span class="cal__month" id="dc-cal-month">—</span>
+                        </div>
+                        <div class="cal__grid" id="dc-cal-grid"></div>
+                    </div>
+                </div>
+
+            </aside>
+
+        </div>
+
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>

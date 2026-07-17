@@ -1,0 +1,24 @@
+tablero;workspace_id;dataset_id;tabla_dax;columna_dax;critico;frecuencia_objetivo_min;demorado_min;activo
+Facturacion;8ac545a2-7e14-41a4-8029-9cba4e6ac469;c21a13af-ce21-452c-8ccd-b6e1db2ef242;conceptos_facturados;Actualizado_al;1;30;60;1
+Nivel de Servicio Estética;a6474caa-85ac-4342-bb7d-dfc7437352d6;eb84cace-d745-49cd-b19c-5d2993599075;nivel_de_servicio;Actualizado_al;1;30;60;1
+Reporte Ventas;a6474caa-85ac-4342-bb7d-dfc7437352d6;27c013d2-9a70-4696-a7c1-9e8baf4634cd;ventas;Actualizado_al;1;30;60;1
+Seguimiento Cobranza - (COBRO BANCOS);8ac545a2-7e14-41a4-8029-9cba4e6ac469;ef777842-77d1-476f-bb3f-572fd4d2bec9;deb_cobros_prepagas_resumen;Actualizado_al;1;30;60;1
+Seguimiento Cobranzas_;8ac545a2-7e14-41a4-8029-9cba4e6ac469;3976268c-f497-4d9a-a0fe-3ee9f6f6c2f0;cobros_prepagas_resumen;Actualizado_al;1;30;60;1
+TABLERO MEDICINA PREPAGA;a6474caa-85ac-4342-bb7d-dfc7437352d6;7ea99159-e100-4c2c-97a8-3c6d50b04505;visaciones;Actualizado_al;1;30;60;1
+TABLERO SERVICIOS;8ac545a2-7e14-41a4-8029-9cba4e6ac469;fd1437fe-1bd8-42ab-9efc-0554700cd4d5;tablero_v;Actualizado_al;1;30;60;1
+Tablero de Servicios Estética;a6474caa-85ac-4342-bb7d-dfc7437352d6;621270c4-f505-415a-81f1-e08bfd43874b;Detalle facturacion estetica;Actualizado_al;1;30;60;1
+Cobranzas Tratamientos;a6474caa-85ac-4342-bb7d-dfc7437352d6;41a8f9e3-f070-48bf-b805-e85ba631e847;Cartera_tratamiento;Actualizado;0;30;60;1
+Corporativo;a6474caa-85ac-4342-bb7d-dfc7437352d6;75634f56-9403-4bd1-95d3-8e81d3e0ba53;activacioneseme;Actualizado_al;0;30;60;1
+Denpro;a6474caa-85ac-4342-bb7d-dfc7437352d6;79c7d303-8188-489f-b66a-afdc4ea3d1d5;actuli_denpro;fecha_hora_actual;0;30;60;1
+EERR_auto;a6474caa-85ac-4342-bb7d-dfc7437352d6;766a0ba8-9494-4364-afd1-14b2d3ea5704;actualizado_al_;actualizado;0;30;60;1
+LTV;a1839600-8feb-47dd-8532-d6043fb0830c;674917a5-7448-4786-8857-cd5f66327e37;BD_LTV;actualizacion;0;30;60;1
+LTV_Odontologia;a1839600-8feb-47dd-8532-d6043fb0830c;79dbb55a-5cdb-4c80-be50-5d102789ff63;LTV_ODO;Fecha_actualizacion;0;30;60;1
+Marcación Eme;a6474caa-85ac-4342-bb7d-dfc7437352d6;100866c8-1328-4402-91f7-629b97ca1831;Marcacion;Actualizado_al;0;30;60;1
+Nivel de Servicio ODO;8ac545a2-7e14-41a4-8029-9cba4e6ac469;b4f50e91-a177-4f6d-af86-e0372001010c;nivel_de_servicio;Actualizado_al;0;30;60;1
+ODONTOLOGOS;a6474caa-85ac-4342-bb7d-dfc7437352d6;adfdaa8a-6717-4f2d-b819-c5beb27ca1aa;ACTUALIZADO AL;actualizado;0;30;60;1
+Reporte ejecutivo;a6474caa-85ac-4342-bb7d-dfc7437352d6;9f854ee3-64b3-4645-a70c-7edefb03a952;actualizacion;Actualizado_al;0;30;60;1
+Saldos pendientes;a6474caa-85ac-4342-bb7d-dfc7437352d6;9adf8a8b-0273-4846-8771-3f9548af58fe;actualizado;Actualizado al;0;30;60;1
+Servicios_Emergencia;a6474caa-85ac-4342-bb7d-dfc7437352d6;426fedd6-0b42-4d57-80e7-8668f4bbb5a1;servicio_emergencia;Actualizacion;0;30;60;1
+TAPO_DESEMBOLSOS;a1839600-8feb-47dd-8532-d6043fb0830c;b48e5530-4a5f-46cf-960c-fd2a352416db;desc_cheques;actualizado;0;30;60;1
+Ventas por edad y genero;a6474caa-85ac-4342-bb7d-dfc7437352d6;aaaca90c-531d-4b00-a302-5f390ea62c29;actualiado al ventas x edad;Actualizado;0;30;60;1
+MLA;a6474caa-85ac-4342-bb7d-dfc7437352d6;8eca9037-2c05-4208-9c90-a780abb92d5b;Ranking;Actualizado_al;0;30;60;1

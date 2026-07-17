@@ -1,0 +1,44 @@
+# --- Entornos y cache ---
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.opencode/
+
+# --- VCS ---
+.git/
+.gitignore
+
+# --- Codigo legacy ---
+_legacy/
+
+# --- Deploy (systemd, no se necesita en Docker) ---
+deploy/
+
+# --- Docs ---
+*.md
+
+# --- Archivos de estado/runtime (se montan como volumenes) ---
+logs/
+token_cache.bin
+estado_actual.json
+estado_tableros_snapshot.json
+cambios_recientes.json
+corrida_monitor_meta.json
+historico_corridas.jsonl
+ntfy_push_pref.json
+mobile_push_tokens.json
+device_flow_info.txt
+
+# --- Scripts de desarrollo/test ---
+scripts/
+tests/
+
+# --- Docker propio (evitar recursion) ---
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# --- OS ---
+Thumbs.db
+.DS_Store

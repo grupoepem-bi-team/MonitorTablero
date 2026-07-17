@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+token_cache.bin
+.env
+estado_tableros_snapshot.json
+estado_actual.json
+cambios_recientes.json
+corrida_monitor_meta.json
+historico_corridas.jsonl
+ntfy_push_pref.json
+mobile_push_tokens.json
+device_flow_info.txt
+logs/

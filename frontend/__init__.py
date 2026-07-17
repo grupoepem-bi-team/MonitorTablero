@@ -1,0 +1,1 @@
+"""Frontend del Dashboard Control: servidor FastAPI + estaticos + componentes."""

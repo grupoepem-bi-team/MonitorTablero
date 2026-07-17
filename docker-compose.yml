@@ -1,0 +1,66 @@
+services:
+  # ---------------------------------------------------------------------------
+  # Frontend: FastAPI + uvicorn (dashboard web + API)
+  # ---------------------------------------------------------------------------
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+        - linux/arm64
+    container_name: dashboardcontrol-frontend
+    ports:
+      - "8070:8070"
+    volumes:
+      # .env con credenciales (RO: no se modifica en runtime)
+      - ./.env:/app/.env:ro
+      # Token MSAL (RW: se actualiza al refrescar token)
+      - ./token_cache.bin:/app/token_cache.bin
+      # JSONs de estado (RW: los escribe el scheduler, los lee el frontend)
+      - ./estado_actual.json:/app/estado_actual.json
+      - ./estado_tableros_snapshot.json:/app/estado_tableros_snapshot.json
+      - ./cambios_recientes.json:/app/cambios_recientes.json
+      - ./corrida_monitor_meta.json:/app/corrida_monitor_meta.json
+      - ./historico_corridas.jsonl:/app/historico_corridas.jsonl
+      # Config de tableros (RO)
+      - ./config_tableros.csv:/app/config_tableros.csv:ro
+      # Logs compartidos con scheduler
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TZ=America/Argentina/Buenos_Aires
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8070/api/todos', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    depends_on:
+      - scheduler
+
+  # ---------------------------------------------------------------------------
+  # Scheduler: corre el worker cada 30 min (configurable via SCHEDULER_INTERVAL_MIN)
+  # ---------------------------------------------------------------------------
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dashboardcontrol-scheduler
+    entrypoint: ["python", "-m", "src.scheduler"]
+    volumes:
+      # Mismos volumenes que el frontend para compartir estado
+      - ./.env:/app/.env:ro
+      - ./token_cache.bin:/app/token_cache.bin
+      - ./estado_actual.json:/app/estado_actual.json
+      - ./estado_tableros_snapshot.json:/app/estado_tableros_snapshot.json
+      - ./cambios_recientes.json:/app/cambios_recientes.json
+      - ./corrida_monitor_meta.json:/app/corrida_monitor_meta.json
+      - ./historico_corridas.jsonl:/app/historico_corridas.jsonl
+      - ./config_tableros.csv:/app/config_tableros.csv:ro
+      - ./logs:/app/logs
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TZ=America/Argentina/Buenos_Aires
+    restart: unless-stopped

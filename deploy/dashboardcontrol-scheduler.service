@@ -1,0 +1,16 @@
+[Unit]
+Description=Dashboard Control - Scheduler (monitor Power BI cada 30 min)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=vm-hermes
+WorkingDirectory=/opt/dashboardcontrol
+ExecStart=/opt/dashboardcontrol/.venv/bin/python -m src.scheduler
+Restart=always
+RestartSec=10
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
