@@ -289,15 +289,12 @@ html, body {
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     overflow: hidden;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
 }
 
 .data-table {
     width: 100%;
-    min-width: max-content;
     border-collapse: collapse;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 .data-table thead {
@@ -316,12 +313,12 @@ html, body {
     white-space: nowrap;
 }
 
-.data-table th.col-estado { width: 48px; padding-left: 16px; }
+.data-table th.col-estado { width: 36px; padding-left: 10px; }
 .data-table th.col-tablero { width: auto; }
-.data-table th.col-ultima { width: 130px; }
-.data-table th.col-timeline { width: 320px; }
-.data-table th.col-atraso { width: 90px; text-align: right; }
-.data-table th.col-arrow { width: 32px; padding-right: 16px; }
+.data-table th.col-ultima { width: 100px; }
+.data-table th.col-timeline { width: 200px; }
+.data-table th.col-atraso { width: 70px; text-align: right; }
+.data-table th.col-arrow { width: 24px; padding-right: 10px; }
 
 .timeline-header {
     display: flex;
