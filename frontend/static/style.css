@@ -295,6 +295,7 @@ html, body {
 
 .data-table {
     width: 100%;
+    min-width: max-content;
     border-collapse: collapse;
     font-size: 13px;
 }
