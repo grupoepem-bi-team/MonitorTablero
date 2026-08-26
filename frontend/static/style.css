@@ -42,9 +42,9 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 0 16px;
+    padding: 8px 0 4px;
     border-bottom: 1px solid var(--color-border);
-    gap: 16px;
+    margin-bottom: 6px;
 }
 
 .header-left {
@@ -55,10 +55,10 @@ html, body {
 }
 
 .header-title {
-    font-size: 20px;
+    font-size: 16px;
     font-weight: 700;
     color: var(--color-text);
-    letter-spacing: -0.3px;
+    line-height: 1.2;
 }
 
 .header-live-badge {
@@ -150,7 +150,7 @@ html, body {
 .kpi-bar {
     display: flex;
     align-items: center;
-    padding: 16px 0;
+    padding: 8px 0;
     gap: 0;
     border-bottom: 1px solid var(--color-border);
 }
@@ -158,22 +158,22 @@ html, body {
 .kpi-item {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 0 20px;
+    gap: 4px;
+    padding: 0 12px;
 }
 
 .kpi-item:first-child { padding-left: 0; }
 
 .kpi-number {
-    font-size: 22px;
+    font-size: 18px;
     font-weight: 700;
     line-height: 1;
-    min-width: 28px;
+    min-width: 22px;
     text-align: center;
 }
 
 .kpi-label {
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 500;
     color: var(--color-text-secondary);
 }
@@ -185,7 +185,7 @@ html, body {
 
 .kpi-divider {
     width: 1px;
-    height: 24px;
+    height: 16px;
     background: var(--color-border);
     flex-shrink: 0;
 }
@@ -239,25 +239,25 @@ html, body {
 
 /* ========== SECTIONS ========== */
 .section {
-    margin-top: 20px;
+    margin-top: 8px;
 }
 
 .section-header {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 8px;
+    gap: 8px;
+    margin-bottom: 4px;
 }
 
 .section-title {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     color: var(--color-text);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 .section-count {
@@ -303,8 +303,8 @@ html, body {
 }
 
 .data-table th {
-    padding: 8px 12px;
-    font-size: 11px;
+    padding: 4px 8px;
+    font-size: 9px;
     font-weight: 600;
     color: var(--color-text-secondary);
     text-transform: uppercase;
@@ -313,22 +313,22 @@ html, body {
     white-space: nowrap;
 }
 
-.data-table th.col-estado { width: 36px; padding-left: 10px; }
+.data-table th.col-estado { width: 32px; padding-left: 8px; }
 .data-table th.col-tablero { width: auto; }
-.data-table th.col-ultima { width: 100px; }
-.data-table th.col-timeline { width: 200px; }
-.data-table th.col-atraso { width: 70px; text-align: right; }
-.data-table th.col-arrow { width: 24px; padding-right: 10px; }
+.data-table th.col-ultima { width: 85px; }
+.data-table th.col-timeline { width: 160px; }
+.data-table th.col-atraso { width: 55px; text-align: right; }
+.data-table th.col-arrow { width: 20px; padding-right: 8px; }
 
 .timeline-header {
     display: flex;
     justify-content: space-between;
-    font-size: 10px;
+    font-size: 8px;
     color: var(--color-text-muted);
     font-weight: 400;
     text-transform: none;
     letter-spacing: 0;
-    padding: 0 4px;
+    padding: 0 2px;
 }
 
 .data-table tbody tr {
@@ -343,12 +343,12 @@ html, body {
 }
 
 .data-table td {
-    padding: 10px 12px;
+    padding: 4px 8px;
     vertical-align: middle;
 }
 
-.data-table td.col-estado { padding-left: 16px; }
-.data-table td.col-arrow { padding-right: 16px; text-align: right; }
+.data-table td.col-estado { padding-left: 8px; }
+.data-table td.col-arrow { padding-right: 8px; text-align: right; }
 
 /* ========== STATE DOT ========== */
 .state-dot {
@@ -380,8 +380,9 @@ html, body {
 
 /* ========== TABLERO NAME ========== */
 .tablero-name {
-    font-weight: 600;
+    font-weight: 500;
     color: var(--color-text);
+    font-size: 11px;
 }
 
 /* ========== ULTIMA ACTUALIZACION ========== */
@@ -460,13 +461,13 @@ html, body {
 
 /* ========== FOOTER ========== */
 .footer {
+    padding: 6px 0 2px;
+    border-top: 1px solid var(--color-border);
+    font-size: 9px;
+    color: var(--color-text-muted);
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 16px 0 8px;
-    margin-top: 8px;
-    font-size: 11px;
-    color: var(--color-text-muted);
+    gap: 8px;
 }
 
 .footer-icon {
