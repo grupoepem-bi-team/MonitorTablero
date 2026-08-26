@@ -6,99 +6,158 @@
     <title>Monitor de Tableros</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" type="image/x-icon" href="/static/icons8-power-bi-50.ico">
 </head>
 <body>
-
     <div class="app">
-
-        <!-- HEADER — horario de actualizacion con protagonismo -->
-        <header class="hdr">
-            <div class="hdr__left">
-                <div class="hdr__brand">
-                    <h1 class="hdr__title">Monitor de Tableros</h1>
-                    <span class="hdr__subtitle">Monitoreo de actualizacion</span>
-                </div>
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-left">
+                <h1 class="header-title">Monitor de Tableros</h1>
+                <span class="header-live-badge">
+                    <span class="live-dot"></span>
+                    En vivo
+                </span>
             </div>
-            <div class="hdr__center">
-                <span class="hdr__update-label">Ultima actualizacion</span>
-                <span class="hdr__update-time" id="dc-ultima-consulta" aria-live="polite">cargando...</span>
+            <div class="header-center">
+                <span class="header-time" id="header-time">--:--</span>
+                <span class="header-check" id="header-check">Ultima comprobacion: --s</span>
             </div>
-            <div class="hdr__right">
-                <div class="theme-toggle" id="dc-theme-toggle" role="group" aria-label="Modo de color">
-                    <button class="theme-btn" data-theme="light" aria-label="Modo claro" title="Claro">
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M7 1v1.5M7 11.5V13M1 7h1.5M11.5 7H13M2.8 2.8l1 1M10.2 10.2l1 1M2.8 11.2l1-1M10.2 3.8l1-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                    </button>
-                    <button class="theme-btn" data-theme="auto" aria-label="Modo automatico" title="Automatico (segun horario)">
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.5"/><path d="M7 4v3l2.5 1.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </button>
-                    <button class="theme-btn" data-theme="dark" aria-label="Modo oscuro" title="Oscuro">
-                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M11.5 8.5A5 5 0 0 1 5.5 2.5a5 5 0 1 0 6 6z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
-                    </button>
-                </div>
-                <button class="btn" id="dc-btn-actualizar" type="button" aria-label="Actualizar">
-                    <svg class="btn__icon" id="dc-btn-icon" width="14" height="14" viewBox="0 0 15 15" fill="none" aria-hidden="true">
-                        <path d="M7.5 1.5a6 6 0 1 0 6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-                        <path d="M7.5 4V1.5L9.8 3.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <div class="header-right">
+                <button class="btn-refresh" id="btn-refresh" type="button">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                        <path d="M8 1.5a6.5 6.5 0 1 0 6.5 6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M8 4V1.5L10.5 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                    <span class="btn__text">Actualizar</span>
+                    Actualizar
                 </button>
             </div>
         </header>
 
-        <!-- LAYOUT: main + sidebar -->
-        <div class="layout">
-
-            <!-- MAIN: secciones de tableros -->
-            <main class="main">
-                <section class="sec sec--late">
-                    <h2 class="sec__title">Atrasados <span class="sec__count" id="dc-late-count">0</span></h2>
-                    <div class="sec__list" id="dc-late-list"></div>
-                </section>
-
-                <section class="sec sec--ok">
-                    <h2 class="sec__title">Al dia <span class="sec__count sec__count--ok" id="dc-ok-count">0</span></h2>
-                    <div class="sec__list" id="dc-ok-list"></div>
-                </section>
-
-                <footer class="ftr">
-                    <span id="dc-footer-meta">—</span>
-                    <span class="ftr__sep">·</span>
-                    <span id="dc-next-refresh">prox. --</span>
-                </footer>
-            </main>
-
-            <!-- SIDEBAR: hora + calendario -->
-            <aside class="sidebar">
-
-                <!-- Hora actual -->
-                <div class="widget widget--clock">
-                    <div class="clock">
-                        <div class="clock__time" id="dc-clock-time">
-                            <span class="clock__hm" id="dc-clock-hm">
-                                <span id="dc-clock-hh">--</span><span class="clock__colon" aria-hidden="true">:</span><span id="dc-clock-mm">--</span>
-                            </span>
-                        </div>
-                        <div class="clock__secs" id="dc-clock-secs">--</div>
+        <!-- KPI SUMMARY BAR -->
+        <div class="kpi-bar" id="kpi-bar">
+            <div class="kpi-item kpi-danger">
+                <span class="kpi-number" id="kpi-atencion">0</span>
+                <span class="kpi-label">Requieren atencion</span>
+            </div>
+            <div class="kpi-divider"></div>
+            <div class="kpi-item kpi-warning">
+                <span class="kpi-number" id="kpi-advertencia">0</span>
+                <span class="kpi-label">Advertencia</span>
+            </div>
+            <div class="kpi-divider"></div>
+            <div class="kpi-item kpi-ok">
+                <span class="kpi-number" id="kpi-aldia">0</span>
+                <span class="kpi-label">Al dia</span>
+            </div>
+            <div class="kpi-divider"></div>
+            <div class="kpi-item kpi-total">
+                <span class="kpi-number" id="kpi-total">0</span>
+                <span class="kpi-label">Total</span>
+            </div>
+            <div class="kpi-spacer"></div>
+            <div class="kpi-legend">
+                <span class="legend-title">Referencia de tiempos</span>
+                <div class="legend-bars">
+                    <div class="legend-item">
+                        <div class="legend-bar legend-bar-ok"></div>
+                        <span class="legend-text">0 - 30 min</span>
                     </div>
-                    <div class="clock__date" id="dc-clock-date">—</div>
-                </div>
-
-                <!-- Calendario -->
-                <div class="widget widget--cal">
-                    <div class="cal">
-                        <div class="cal__header">
-                            <span class="cal__month" id="dc-cal-month">—</span>
-                        </div>
-                        <div class="cal__grid" id="dc-cal-grid"></div>
+                    <div class="legend-item">
+                        <div class="legend-bar legend-bar-warn"></div>
+                        <span class="legend-text">30 - 60 min</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-bar legend-bar-danger"></div>
+                        <span class="legend-text">&gt; 60 min</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-bar legend-bar-dark"></div>
+                        <span class="legend-text">&gt; 24 h</span>
                     </div>
                 </div>
-
-            </aside>
-
+            </div>
         </div>
 
+        <!-- CONTENT -->
+        <main class="main">
+            <!-- SECCION REQUIEREN ATENCION -->
+            <section class="section section-late" id="section-late">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        REQUIEREN ATENCION
+                        <span class="section-count" id="late-count">0</span>
+                    </h2>
+                    <span class="section-sort">Ordenado por mayor atraso</span>
+                </div>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th class="col-estado">Estado</th>
+                                <th class="col-tablero">Tablero</th>
+                                <th class="col-ultima">Ultima actualizacion</th>
+                                <th class="col-timeline" colspan="4">
+                                    <div class="timeline-header">
+                                        <span>0</span>
+                                        <span>30 min</span>
+                                        <span>60 min</span>
+                                        <span>24 h</span>
+                                    </div>
+                                </th>
+                                <th class="col-atraso">Atraso</th>
+                                <th class="col-arrow"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="late-body">
+                            <!-- JS llena esto -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SECCION AL DIA -->
+            <section class="section section-ok" id="section-ok">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        AL DIA
+                        <span class="section-count section-count-ok" id="ok-count">0</span>
+                    </h2>
+                </div>
+                <div class="table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th class="col-estado">Estado</th>
+                                <th class="col-tablero">Tablero</th>
+                                <th class="col-ultima">Ultima actualizacion</th>
+                                <th class="col-timeline" colspan="4">
+                                    <div class="timeline-header">
+                                        <span>0</span>
+                                        <span>30 min</span>
+                                        <span>60 min</span>
+                                        <span>24 h</span>
+                                    </div>
+                                </th>
+                                <th class="col-atraso">Atraso</th>
+                                <th class="col-arrow"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="ok-body">
+                            <!-- JS llena esto -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <span class="footer-icon">&#9432;</span>
+            <span class="footer-text">Los tiempos reflejan el transcurrido desde la ultima actualizacion del tablero.</span>
+        </footer>
     </div>
 
     <script src="/static/app.js"></script>
