@@ -73,7 +73,15 @@ async def index():
     index_path = _TEMPLATES_DIR / "index.html"
     if not index_path.is_file():
         raise HTTPException(status_code=404, detail="index.html no encontrado")
-    return FileResponse(str(index_path), media_type="text/html")
+    return FileResponse(
+        str(index_path),
+        media_type="text/html",
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0",
+        },
+    )
 
 
 # ---------------------------------------------------------------------------
