@@ -237,6 +237,25 @@ html, body {
     font-variant-numeric: tabular-nums;
 }
 
+/* ========== GRID 3 COLUMNAS ========== */
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+}
+
+@media (max-width: 1800px) {
+    .grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 1200px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* ========== SECTIONS ========== */
 .section {
     margin-top: 8px;

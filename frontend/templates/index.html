@@ -86,74 +86,76 @@
 
         <!-- CONTENT -->
         <main class="main">
-            <!-- SECCION REQUIEREN ATENCION -->
-            <section class="section section-late" id="section-late">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        REQUIEREN ATENCION
-                        <span class="section-count" id="late-count">0</span>
-                    </h2>
-                    <span class="section-sort">Ordenado por mayor atraso</span>
-                </div>
-                <div class="table-wrapper">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th class="col-estado">Estado</th>
-                                <th class="col-tablero">Tablero</th>
-                                <th class="col-ultima">Ultima actualizacion</th>
-                                <th class="col-timeline" colspan="4">
-                                    <div class="timeline-header">
-                                        <span>0</span>
-                                        <span>30 min</span>
-                                        <span>60 min</span>
-                                        <span>24 h</span>
-                                    </div>
-                                </th>
-                                <th class="col-atraso">Atraso</th>
-                                <th class="col-arrow"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="late-body">
-                            <!-- JS llena esto -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+            <div class="grid">
+                <!-- SECCION REQUIEREN ATENCION -->
+                <section class="section section-late" id="section-late">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            REQUIEREN ATENCION
+                            <span class="section-count" id="late-count">0</span>
+                        </h2>
+                        <span class="section-sort">Ordenado por mayor atraso</span>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th class="col-estado">Estado</th>
+                                    <th class="col-tablero">Tablero</th>
+                                    <th class="col-ultima">Ultima actualizacion</th>
+                                    <th class="col-timeline" colspan="4">
+                                        <div class="timeline-header">
+                                            <span>0</span>
+                                            <span>30 min</span>
+                                            <span>60 min</span>
+                                            <span>24 h</span>
+                                        </div>
+                                    </th>
+                                    <th class="col-atraso">Atraso</th>
+                                    <th class="col-arrow"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="late-body">
+                                <!-- JS llena esto -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
 
-            <!-- SECCION AL DIA -->
-            <section class="section section-ok" id="section-ok">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        AL DIA
-                        <span class="section-count section-count-ok" id="ok-count">0</span>
-                    </h2>
-                </div>
-                <div class="table-wrapper">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th class="col-estado">Estado</th>
-                                <th class="col-tablero">Tablero</th>
-                                <th class="col-ultima">Ultima actualizacion</th>
-                                <th class="col-timeline" colspan="4">
-                                    <div class="timeline-header">
-                                        <span>0</span>
-                                        <span>30 min</span>
-                                        <span>60 min</span>
-                                        <span>24 h</span>
-                                    </div>
-                                </th>
-                                <th class="col-atraso">Atraso</th>
-                                <th class="col-arrow"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="ok-body">
-                            <!-- JS llena esto -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+                <!-- SECCION AL DIA -->
+                <section class="section section-ok" id="section-ok">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            AL DIA
+                            <span class="section-count section-count-ok" id="ok-count">0</span>
+                        </h2>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th class="col-estado">Estado</th>
+                                    <th class="col-tablero">Tablero</th>
+                                    <th class="col-ultima">Ultima actualizacion</th>
+                                    <th class="col-timeline" colspan="4">
+                                        <div class="timeline-header">
+                                            <span>0</span>
+                                            <span>30 min</span>
+                                            <span>60 min</span>
+                                            <span>24 h</span>
+                                        </div>
+                                    </th>
+                                    <th class="col-atraso">Atraso</th>
+                                    <th class="col-arrow"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="ok-body">
+                                <!-- JS llena esto -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
         </main>
 
         <!-- FOOTER -->
