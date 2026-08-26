@@ -301,4 +301,24 @@
     // --- Inicio ---
     cargar();
 
+    // --- Dark Mode Toggle ---
+    const btnTheme = document.getElementById("btn-theme");
+    if (btnTheme) {
+        const savedTheme = localStorage.getItem("monitor-theme");
+        const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const isDark = savedTheme === "dark" || (!savedTheme && prefersDark);
+
+        if (isDark) {
+            document.documentElement.classList.add("dark");
+            btnTheme.textContent = "☀️";
+        } else {
+            btnTheme.textContent = "🌙";
+        }
+
+        btnTheme.addEventListener("click", () => {
+            const isDarkNow = document.documentElement.classList.toggle("dark");
+            localStorage.setItem("monitor-theme", isDarkNow ? "dark" : "light");
+            btnTheme.textContent = isDarkNow ? "☀️" : "🌙";
+        });
+    }
 })();

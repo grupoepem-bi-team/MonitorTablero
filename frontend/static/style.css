@@ -558,3 +558,118 @@ html, body {
     .badge-cr { font-size: 8px; padding: 0 3px; }
     .footer { font-size: 10px; padding: 10px 0 4px; }
 }
+
+/* ========== DARK MODE ========== */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-bg: #0f172a;
+        --color-header-bg: #0f172a;
+        --color-border: #334155;
+        --color-text: #f1f5f9;
+        --color-text-secondary: #94a3b8;
+        --color-text-muted: #64748b;
+        --color-danger: #f87171;
+        --color-danger-light: #7f1d1d;
+        --color-warning: #fbbf24;
+        --color-warning-light: #78350f;
+        --color-success: #34d399;
+        --color-success-light: #064e3b;
+        --color-total: #f1f5f9;
+        --color-timeline-bg: #1e293b;
+        --color-timeline-line: #475569;
+    }
+
+    html, body { background: #0b1120; }
+    .app { background: #0b1120; }
+
+    .data-table thead { background: #1e293b; border-bottom-color: #334155; }
+    .data-table tbody tr { border-bottom-color: #1e293b; }
+    .data-table tbody tr:hover { background: #1e293b; }
+    .timeline-track { background: #334155; }
+    .timeline-fill--ok { background: #34d399; }
+    .timeline-fill--advertencia { background: #fbbf24; }
+    .timeline-fill--demorado { background: #f87171; }
+    .timeline-fill--error { background: #64748b; }
+    .timeline-mark { background: #475569; }
+    .atraso-text--error { color: #94a3b8; }
+
+    .btn-refresh { background: #1e293b; border-color: #334155; color: #f1f5f9; }
+    .btn-refresh:hover { background: #334155; border-color: #475569; }
+    .btn-refresh:active { background: #1e293b; }
+
+    .btn-theme { background: #1e293b; border-color: #334155; }
+    .btn-theme:hover { background: #334155; }
+
+    .kpi-legend-bar { border-color: #334155; }
+    .loading-overlay { background: rgba(15, 23, 42, 0.8); }
+    .loading-spinner { border-color: #334155; border-top-color: #f1f5f9; }
+
+    .section-count-ok { background: #334155; color: #94a3b8; }
+    .badge-cr { color: #f87171; border-color: #f87171; }
+    .col-arrow { color: #64748b; }
+}
+
+/* ========== DARK MODE FORZADO POR CLASE ========== */
+html.dark {
+    --color-bg: #0f172a;
+    --color-header-bg: #0f172a;
+    --color-border: #334155;
+    --color-text: #f1f5f9;
+    --color-text-secondary: #94a3b8;
+    --color-text-muted: #64748b;
+    --color-danger: #f87171;
+    --color-danger-light: #7f1d1d;
+    --color-warning: #fbbf24;
+    --color-warning-light: #78350f;
+    --color-success: #34d399;
+    --color-success-light: #064e3b;
+    --color-total: #f1f5f9;
+    --color-timeline-bg: #1e293b;
+    --color-timeline-line: #475569;
+}
+
+html.dark, html.dark body { background: #0b1120; }
+html.dark .app { background: #0b1120; }
+html.dark .data-table thead { background: #1e293b; border-bottom-color: #334155; }
+html.dark .data-table tbody tr { border-bottom-color: #1e293b; }
+html.dark .data-table tbody tr:hover { background: #1e293b; }
+html.dark .timeline-track { background: #334155; }
+html.dark .timeline-fill--ok { background: #34d399; }
+html.dark .timeline-fill--advertencia { background: #fbbf24; }
+html.dark .timeline-fill--demorado { background: #f87171; }
+html.dark .timeline-fill--error { background: #64748b; }
+html.dark .timeline-mark { background: #475569; }
+html.dark .atraso-text--error { color: #94a3b8; }
+html.dark .btn-refresh { background: #1e293b; border-color: #334155; color: #f1f5f9; }
+html.dark .btn-refresh:hover { background: #334155; border-color: #475569; }
+html.dark .btn-refresh:active { background: #1e293b; }
+html.dark .btn-theme { background: #1e293b; border-color: #334155; }
+html.dark .btn-theme:hover { background: #334155; }
+html.dark .kpi-legend-bar { border-color: #334155; }
+html.dark .loading-overlay { background: rgba(15, 23, 42, 0.8); }
+html.dark .loading-spinner { border-color: #334155; border-top-color: #f1f5f9; }
+html.dark .section-count-ok { background: #334155; color: #94a3b8; }
+html.dark .badge-cr { color: #f87171; border-color: #f87171; }
+html.dark .col-arrow { color: #64748b; }
+
+/* ========== THEME TOGGLE BUTTON ========== */
+.btn-theme {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    font-size: 16px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    margin-right: 6px;
+}
+
+.btn-theme:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+}
