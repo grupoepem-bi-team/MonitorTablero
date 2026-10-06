@@ -60,6 +60,22 @@ if not CLIENT_ID:
         "El fallback hardcodeado fue removido por seguridad (app vieja con permisos excesivos)."
     )
 
+AZURE_TENANT_ID = os.environ.get("AZURE_TENANT_ID", "").strip()
+"""ID del tenant (GRUPOIDEM). Solo informativo; el AUTHORITY ya lo incluye."""
+
+AZURE_CLIENT_SECRET = os.environ.get("AZURE_CLIENT_SECRET", "").strip()
+"""Secreto de la app (Service Principal). Si esta, se usa modo app-only sin usuario."""
+
+AUTH_MODE = "service_principal" if AZURE_CLIENT_SECRET else "device_flow"
+"""
+Modo de autenticacion:
+  - "service_principal" si hay AZURE_CLIENT_SECRET: token app-only (sin usuario humano).
+  - "device_flow" en caso contrario: usa el token_cache.bin (requiere login previo).
+"""
+
+POWERBI_SCOPE = "https://analysis.windows.net/powerbi/api/.default"
+"""Scope para el flujo client-credentials (app-only) del Service Principal."""
+
 AUTHORITY = "https://login.microsoftonline.com/655b856c-39c2-4438-9d98-b375b84019a9"
 """Endpoint de Azure AD para el flujo de dispositivo (tenant GRUPOIDEM)."""
 
