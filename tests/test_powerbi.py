@@ -13,6 +13,7 @@ from unittest.mock import MagicMock, patch
 
 import pandas as pd
 import pytest
+import requests
 
 from src import config
 from src.powerbi import (
@@ -169,3 +170,69 @@ class TestFilaResultadoError:
         assert fila["critico"] == "1"
         assert pd.isna(fila["ultima_actualizacion"])
         assert fila["error_detalle"] == "msg"
+
+
+# ---------------------------------------------------------------------------
+# Fase 2: reintentos y renovacion de token
+# ---------------------------------------------------------------------------
+
+
+class TestReintentos:
+    """Un fallo transitorio (timeout / 5xx / 429) no debe marcar el tablero en Error."""
+
+    def _ok_resp(self):
+        resp = MagicMock()
+        resp.status_code = 200
+        resp.raise_for_status = MagicMock()
+        resp.json.return_value = {
+            "results": [{"tables": [{"rows": [{"[ultima_actualizacion]": "2026-01-01T10:00:00"}]}]}]
+        }
+        return resp
+
+    @patch("src.powerbi.time.sleep", MagicMock())
+    @patch("src.powerbi.requests.post")
+    def test_reintenta_en_timeout_y_luego_ok(self, mock_post):
+        mock_post.side_effect = [requests.Timeout("boom"), requests.Timeout("boom"), self._ok_resp()]
+        ts = consultar_tablero(_ROW, "tok")
+        assert ts == pd.Timestamp("2026-01-01 10:00:00")
+        assert mock_post.call_count == 3
+
+    @patch("src.powerbi.time.sleep", MagicMock())
+    @patch("src.powerbi.requests.post")
+    def test_reintenta_en_500_y_luego_ok(self, mock_post):
+        err = MagicMock()
+        err.status_code = 503
+        err.raise_for_status.side_effect = Exception("HTTP 503")
+        mock_post.side_effect = [err, self._ok_resp()]
+        ts = consultar_tablero(_ROW, "tok")
+        assert ts == pd.Timestamp("2026-01-01 10:00:00")
+        assert mock_post.call_count == 2
+
+    @patch("src.powerbi.time.sleep", MagicMock())
+    @patch("src.powerbi.requests.post")
+    def test_agota_reintentos_y_lanza(self, mock_post):
+        mock_post.side_effect = requests.Timeout("siempre falla")
+        with pytest.raises(Exception):
+            consultar_tablero(_ROW, "tok")
+        # intentos iniciales + POWERBI_RETRIES
+        assert mock_post.call_count == config.POWERBI_RETRIES + 1
+
+
+class TestRenovacionTokenEn401:
+    """Si el token vencio a mitad de corrida (401), renovar una vez y reintentar."""
+
+    @patch("src.powerbi.obtener_token")
+    @patch("src.powerbi.consultar_tablero")
+    def test_renueva_token_y_reintenta(self, mock_consultar, mock_token):
+        err401 = requests.HTTPError("401 Client Error")
+        err401.response = MagicMock(status_code=401)
+        mock_consultar.side_effect = [err401, pd.Timestamp("2026-01-01 10:00:00")]
+        mock_token.return_value = "token-nuevo"
+        hora = pd.Timestamp("2026-01-01 10:30:00")
+
+        resultado = _procesar_un_tablero(_ROW, "token-viejo", hora)
+
+        assert resultado["estado"] == "OK"
+        assert resultado["error_detalle"] == ""
+        mock_token.assert_called_once()
+        assert mock_consultar.call_args_list[1][0][1] == "token-nuevo"

@@ -93,6 +93,12 @@ MAX_WORKERS_POWERBI = 12
 POWERBI_API_TIMEOUT_S = 30
 """Timeout en segundos para cada consulta DAX a la API de Power BI."""
 
+POWERBI_RETRIES = int(os.environ.get("POWERBI_RETRIES", "3") or 3)
+"""Reintentos ante errores transitorios (timeout/conexion y 429/5xx) antes de dar Error."""
+
+POWERBI_BACKOFF_S = float(os.environ.get("POWERBI_BACKOFF_S", "0.5") or 0.5)
+"""Segundos de espera base entre reintentos (crece exponencialmente: base, 2x, 4x...)."""
+
 
 # ---------------------------------------------------------------------------
 # Umbrales de estado por defecto
