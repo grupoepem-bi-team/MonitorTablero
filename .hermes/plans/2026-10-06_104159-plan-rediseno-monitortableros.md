@@ -51,6 +51,37 @@ Telegram Bot API. Sin base de datos, sin frameworks de frontend.
 
 ---
 
+# ═══════════════════════════════════════════════════════════════════════════
+# ESTADO DE EJECUCIÓN (actualizado 06/10/2026)
+# ═══════════════════════════════════════════════════════════════════════════
+#
+# ✔ F0 — REANIMAR (HECHO): device flow re-ejecutado en el 95; token_cache.bin
+#   regenerado; corrida real 21 tableros / 0 errores. Producción reportando hoy.
+#
+# ✔ F1 — AUTH (HECHO, commit 0f2c1cd): config SP + auth con modo Service Principal
+#   / fallback device flow + FIX DEL BUG DE RAÍZ (persistir el token cache).
+#   5 tests. PENDIENTE ACTIVAR: cargar AZURE_CLIENT_SECRET en el .env del 95
+#   (requiere habilitar app-only en la app existente, Tarea 1.0). Sin el secret,
+#   sigue en device flow — seguro, no rompe.
+#
+# ✔ F2 — REINTENTOS (HECHO, commit 2ff554a): backoff ante timeout/red y 429/5xx;
+#   renovación de token ante 401. 5 tests.
+#
+# ✔ F4 — SALUD HONESTA (HECHO, commit 7c2a07b): src/salud.py, GET /healthz que
+#   valida la ÚLTIMA CORRIDA, healthchecks reales en docker-compose/Dockerfile,
+#   franja de salud + badge honesto en la UI (diseño intacto). 12 tests.
+#   Verificado con prueba de humo real (200/503/503 en los 3 casos).
+#
+# ⏸ F3 — ALERTAS TELEGRAM: EN PAUSA por decisión de Emmanuel (06/10).
+#   Especificada abajo (Tareas 3.1–3.4). No bloquea F1/F2/F4.
+#
+# ☐ F5 — DOCS: actualizar README.md / MAPA_PROYECTO.md (describen la gen vieja).
+# ☐ DEPLOY al 95: rebuild + restart de los 2 contenedores (manual, con aprobación).
+#
+# Suite: 214 passed, 4 skipped (base 190 + 24 nuevos).
+#
+# ═══════════════════════════════════════════════════════════════════════════
+
 # FASE 1 — Autenticación que no caduca ni se rompe
 
 ## Tarea 1.0 (MANUAL, la hace Emmanuel o el admin de Azure) — habilitar app-only en la app existente
