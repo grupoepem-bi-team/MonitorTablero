@@ -116,6 +116,38 @@ class TestFavicon:
         )
 
 
+class TestTablaAlineada:
+    """
+    La cabecera y el cuerpo deben declarar la MISMA cantidad de columnas.
+
+    El 26/08 un `colspan="4"` en el <th> de la timeline (heredado de un diseño
+    anterior) declaraba 9 columnas donde el cuerpo tiene 6: la columna "Atraso"
+    de la cabecera quedaba ~107 px desalineada de su dato y la escala de la
+    timeline se estiraba a 126 px en vez de los 160 px del CSS. Lo corrigio
+    `master` (691e01e) pero nunca se fusiono; se rescato el 06/10.
+    """
+
+    def test_la_cabecera_no_tiene_colspan(self):
+        html = _html()
+        assert 'class="col-timeline" colspan' not in html, (
+            "el <th> de la timeline no debe llevar colspan: desalinea la cabecera"
+        )
+
+    def test_th_y_td_declaran_lo_mismo(self):
+        html = _html()
+        import re
+
+        # Cantidad de <th> por tabla (sin contar los colspan)
+        for tabla in re.findall(r"<table.*?</table>", html, re.S):
+            ths = len(re.findall(r"<th\b", tabla))
+            # El cuerpo lo llena el JS: la fila tiene 6 <td> (ver renderTabla).
+            assert ths == 6, f"la tabla declara {ths} columnas; el cuerpo pinta 6"
+
+    def test_el_ancho_de_la_timeline_esta_definido(self):
+        css = _css()
+        assert ".data-table th.col-timeline" in css, "falta el ancho de la columna timeline"
+
+
 class TestJavaScriptRender:
     """
     Ejecuta el app.js REAL contra un DOM minimo (tests/js_smoke.js).
