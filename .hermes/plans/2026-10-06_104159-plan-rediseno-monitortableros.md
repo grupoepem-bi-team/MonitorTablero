@@ -76,7 +76,10 @@ Telegram Bot API. Sin base de datos, sin frameworks de frontend.
 #   Especificada abajo (Tareas 3.1–3.4). No bloquea F1/F2/F4.
 #
 # ☐ F5 — DOCS: actualizar README.md / MAPA_PROYECTO.md (describen la gen vieja).
-# ☐ DEPLOY al 95: rebuild + restart de los 2 contenedores (manual, con aprobación).
+# ✔ DEPLOY al 95 (HECHO 06/10): rama feature/resiliencia-monitor checkouteada y corriendo
+#   (commit 113bf8b). Imágenes reconstruidas, 2 contenedores healthy, corrida real
+#   21 tableros / 0 errores, /healthz 200. Prueba de caos OK (/healthz -> 503 al simular
+#   fallo). Fix del build: docker-compose platforms solo linux/amd64 (el 95 no tiene qemu).
 #
 # Suite: 214 passed, 4 skipped (base 190 + 24 nuevos).
 #
