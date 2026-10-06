@@ -239,7 +239,7 @@
         // Contadores de secciones
         const lateCount = document.getElementById("late-count");
         const okCount = document.getElementById("ok-count");
-        if (lateCount) lateCount.textContent = String(nAtencion);
+        if (lateCount) lateCount.textContent = String(late.length);
         if (okCount) okCount.textContent = String(nOk);
 
         // Render tablas

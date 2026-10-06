@@ -114,3 +114,35 @@ class TestFavicon:
         assert "/static/icons8-power-bi-50.ico" in html, (
             "el <link> del favicon debe apuntar a /static/, que es lo que se monta"
         )
+
+
+class TestJavaScriptRender:
+    """
+    Ejecuta el app.js REAL contra un DOM minimo (tests/js_smoke.js).
+
+    Sin esto, un error de JavaScript en el render no lo ve ninguna prueba de
+    Python: el 06/10/2026 una variable borrada dejo la tabla VACIA en produccion
+    y la suite siguio verde. Requiere Node; si no esta, se salta.
+    """
+
+    def test_el_render_no_explota(self):
+        import shutil
+        import subprocess
+
+        node = shutil.which("node") or shutil.which("node.exe")
+        if not node:
+            pytest.skip("Node no esta instalado: no se puede correr el smoke de JS")
+
+        js_smoke = os.path.join(_ROOT, "tests", "js_smoke.js")
+        r = subprocess.run(
+            [node, js_smoke],
+            cwd=_ROOT,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        assert r.returncode == 0, (
+            "el render de app.js fallo\n"
+            f"STDOUT: {r.stdout.strip()}\n"
+            f"STDERR: {r.stderr.strip()}"
+        )
