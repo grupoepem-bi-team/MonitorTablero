@@ -18,7 +18,7 @@ import sys
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from src import config
@@ -131,6 +131,21 @@ async def index(request: Request):
         path="/",
     )
     return response
+
+
+@app.get("/favicon.ico")
+async def favicon():
+    """
+    Sirve el favicon tambien en la ruta raiz /favicon.ico.
+
+    Algunos navegadores (y los marcadores/atajos guardados) piden /favicon.ico
+    por su cuenta, sin mirar el <link> del HTML. Sin esta ruta respondia 404 y la
+    pestaña quedaba sin icono. Regla del proyecto: NINGUNA pagina sin favicon.
+    """
+    ico = _STATIC_DIR / "icons8-power-bi-50.ico"
+    if not ico.is_file():
+        raise HTTPException(status_code=404, detail="favicon no encontrado")
+    return FileResponse(str(ico), media_type="image/vnd.microsoft.icon")
 
 
 @app.get("/healthz")

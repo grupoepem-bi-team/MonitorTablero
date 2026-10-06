@@ -101,7 +101,14 @@ class TestSinAvisos:
 
 
 class TestFavicon:
-    """El favicon debe existir dentro de la imagen (Docker solo copia frontend/)."""
+    """
+    El favicon debe existir Y servirse por las dos vias.
+
+    Regla del proyecto (06/10/2026): NINGUNA pagina sin favicon. El .ico debe
+    estar en frontend/static/ (Docker solo copia frontend/), el HTML pedirlo con
+    version para romper la cache que guardo el 404 viejo, y la ruta raiz
+    /favicon.ico (que algunos navegadores piden solos) tambien debe responder.
+    """
 
     def test_el_ico_esta_en_static(self):
         ico = os.path.join(_STATIC, "icons8-power-bi-50.ico")
@@ -113,6 +120,20 @@ class TestFavicon:
         html = _html()
         assert "/static/icons8-power-bi-50.ico" in html, (
             "el <link> del favicon debe apuntar a /static/, que es lo que se monta"
+        )
+
+    def test_el_link_lleva_version(self):
+        """Sin ?v=, el navegador conserva el 404 que cacheo cuando no existia."""
+        html = _html()
+        assert re.search(r"icons8-power-bi-50\.ico\?v=\d+", html), (
+            "el <link> del favicon debe llevar ?v=N para forzar la recarga"
+        )
+
+    def test_existe_la_ruta_raiz_favicon_ico(self):
+        """Algunos navegadores piden /favicon.ico sin mirar el <link>."""
+        server = open(os.path.join(_ROOT, "frontend", "server.py"), encoding="utf-8").read()
+        assert '@app.get("/favicon.ico")' in server, (
+            "falta la ruta /favicon.ico: los navegadores que la piden solos reciben 404"
         )
 
 
