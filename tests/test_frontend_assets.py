@@ -104,28 +104,37 @@ class TestFavicon:
     """
     El favicon debe existir Y servirse por las dos vias.
 
-    Regla del proyecto (06/10/2026): NINGUNA pagina sin favicon. El .ico debe
-    estar en frontend/static/ (Docker solo copia frontend/), el HTML pedirlo con
+    Regla del proyecto (06/10/2026): NINGUNA pagina sin favicon. El icono es la
+    marca de EPEM (emblema oficial) en el tema del panel; el .ico va en
+    frontend/static/ (Docker solo copia frontend/), el HTML debe pedirlo con
     version para romper la cache que guardo el 404 viejo, y la ruta raiz
     /favicon.ico (que algunos navegadores piden solos) tambien debe responder.
     """
 
     def test_el_ico_esta_en_static(self):
-        ico = os.path.join(_STATIC, "icons8-power-bi-50.ico")
+        ico = os.path.join(_STATIC, "epem-monitor-tableros.ico")
         assert os.path.isfile(ico), (
             "el favicon debe estar en frontend/static/ o Docker no lo incluye"
         )
 
+    def test_el_ico_es_multitamano(self):
+        """Un .ico con varios tamanos se ve nitido en todas las barras/atajos."""
+        ico = os.path.join(_STATIC, "epem-monitor-tableros.ico")
+        datos = open(ico, "rb").read()
+        assert datos[:4] == b"\x00\x00\x01\x00", "no es un archivo ICO valido"
+        cantidad = int.from_bytes(datos[4:6], "little")
+        assert cantidad >= 3, f"el .ico tiene {cantidad} tamano(s); conviene que tenga varios"
+
     def test_la_ruta_del_html_apunta_a_static(self):
         html = _html()
-        assert "/static/icons8-power-bi-50.ico" in html, (
+        assert "/static/epem-monitor-tableros.ico" in html, (
             "el <link> del favicon debe apuntar a /static/, que es lo que se monta"
         )
 
     def test_el_link_lleva_version(self):
         """Sin ?v=, el navegador conserva el 404 que cacheo cuando no existia."""
         html = _html()
-        assert re.search(r"icons8-power-bi-50\.ico\?v=\d+", html), (
+        assert re.search(r"epem-monitor-tableros\.ico\?v=\d+", html), (
             "el <link> del favicon debe llevar ?v=N para forzar la recarga"
         )
 
@@ -134,6 +143,12 @@ class TestFavicon:
         server = open(os.path.join(_ROOT, "frontend", "server.py"), encoding="utf-8").read()
         assert '@app.get("/favicon.ico")' in server, (
             "falta la ruta /favicon.ico: los navegadores que la piden solos reciben 404"
+        )
+
+    def test_no_queda_el_icono_de_stock(self):
+        """El icono generico de Power BI (stock) fue reemplazado por la marca EPEM."""
+        assert not os.path.isfile(os.path.join(_STATIC, "icons8-power-bi-50.ico")), (
+            "quedo el icono de stock: el icono debe ser la marca EPEM"
         )
 
 

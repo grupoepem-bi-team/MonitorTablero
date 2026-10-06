@@ -142,7 +142,7 @@ async def favicon():
     por su cuenta, sin mirar el <link> del HTML. Sin esta ruta respondia 404 y la
     pestaña quedaba sin icono. Regla del proyecto: NINGUNA pagina sin favicon.
     """
-    ico = _STATIC_DIR / "icons8-power-bi-50.ico"
+    ico = _STATIC_DIR / "epem-monitor-tableros.ico"
     if not ico.is_file():
         raise HTTPException(status_code=404, detail="favicon no encontrado")
     return FileResponse(str(ico), media_type="image/vnd.microsoft.icon")
