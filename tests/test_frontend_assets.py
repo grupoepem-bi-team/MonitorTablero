@@ -116,6 +116,35 @@ class TestFavicon:
         )
 
 
+class TestEscalaDeTiempos:
+    """
+    La grilla no debe aplastar las tablas (bug de la escala pegada, 06/10/2026).
+
+    Con la grilla fija "1fr 1fr 1fr" y el panel en 1400px, en un monitor de 1920px
+    la tercera columna se comprimia a ~440px, la tabla quedaba en ~338px y la
+    escala de tiempos salia pegada ("030 min60 min24 h"). Ahora la grilla es
+    auto-fit con piso: abre columnas solo cuando ENTRAN.
+    """
+
+    def test_grilla_no_es_fija(self):
+        css = _css()
+        assert "grid-template-columns: 1fr 1fr 1fr" not in css, (
+            "la grilla no debe volver a ser de 3 columnas fijas: aplasta la tabla en pantallas anchas"
+        )
+
+    def test_grilla_usa_minmax(self):
+        css = _css()
+        assert "repeat(auto-fit, minmax(" in css, (
+            "la grilla debe abrir columnas solo cuando entren (auto-fit + minmax)"
+        )
+
+    def test_rotulos_de_la_escala_no_se_parten(self):
+        css = _css()
+        assert ".timeline-header span { white-space: nowrap; }" in css, (
+            "los rotulos de la escala (0 / 30 min / 60 min / 24 h) no deben partirse"
+        )
+
+
 class TestTablaAlineada:
     """
     La cabecera y el cuerpo deben declarar la MISMA cantidad de columnas.

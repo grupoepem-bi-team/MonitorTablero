@@ -276,23 +276,17 @@ html, body {
     font-variant-numeric: tabular-nums;
 }
 
-/* ========== GRID 3 COLUMNAS ========== */
+/* ========== GRILLA DE SECCIONES ========== */
+/* auto-fit + minmax: abre tantas columnas como ENTRAN de verdad, y ninguna queda
+   aplastada. Antes eran "1fr 1fr 1fr" FIJAS: en un monitor de 1920px, con el panel
+   limitado a 1400px, la tercera columna se comia el espacio, la tabla se comprimia
+   y la escala de tiempos se pegaba ("030 min60 min24 h", detectado 06/10/2026).
+   Con 560px de piso: 1920 -> 2 columnas de 670px, 1200 -> 2 de 578px, 1024 -> 1 de 977px.
+   (Verificado midiendo el DOM: 0 desbordes y 22px entre rotulos de 1024 a 1920.) */
 .grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(560px, 1fr));
     gap: 12px;
-}
-
-@media (max-width: 1800px) {
-    .grid {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
-@media (max-width: 1200px) {
-    .grid {
-        grid-template-columns: 1fr;
-    }
 }
 
 /* ========== SECTIONS ========== */
@@ -388,6 +382,10 @@ html, body {
     letter-spacing: 0;
     padding: 0 2px;
 }
+
+/* Los rotulos de la escala NUNCA deben partirse: sin esto, si la columna se
+   angosta, "30 min" se quiebra o se pega contra "0" / "60 min". */
+.timeline-header span { white-space: nowrap; }
 
 .data-table tbody tr {
     border-bottom: 1px solid #f3f4f6;
