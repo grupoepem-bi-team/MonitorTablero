@@ -12,12 +12,13 @@ from __future__ import annotations
 
 import asyncio
 import os
+import secrets
 import subprocess
 import sys
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from src import config
@@ -48,6 +49,29 @@ app = FastAPI(title="Dashboard Control", version="2.0.0")
 # lineas en historico_corridas.jsonl y perder datos en el truncado.
 _corrida_lock = asyncio.Lock()
 
+# ---------------------------------------------------------------------------
+# Proteccion de las acciones que disparan trabajo real (corrida manual)
+# ---------------------------------------------------------------------------
+# Contexto: el puerto 8070 queda expuesto a toda la red interna y POST
+# /api/corrida NO pedia ninguna credencial. Cualquiera podia lanzar corridas
+# contra la API de Power BI (quema cuota y puede bloquear el panel). Verificado
+# el 06/10/2026: un POST sin credenciales devolvia 200 y corria el worker.
+#
+# Solucion elegida (doble envio, sin pedir contraseña al usuario):
+#   1. La primera visita al panel deja una cookie con un token aleatorio.
+#   2. La pagina trae ese mismo token en un <meta> (solo la misma sesion lo ve).
+#   3. Para disparar una corrida, el navegador manda el token en la cabecera
+#      X-CSRF-Token; el servidor exige que coincida con la cookie.
+# Asi un script externo (curl, bot) recibe 403: no tiene la cookie de la sesion.
+# Un navegador que abrio el panel sigue funcionando, sin ningun login.
+_CSRF_COOKIE = "monitor_csrf"
+_CSRF_HEADER = "X-CSRF-Token"
+
+
+def _token_de_sesion(request: Request) -> str:
+    """Devuelve el token de sesion existente o genera uno nuevo."""
+    return request.cookies.get(_CSRF_COOKIE) or secrets.token_urlsafe(32)
+
 # Montar archivos estaticos (CSS, JS, iconos)
 app.mount("/static", StaticFiles(directory=str(_STATIC_DIR)), name="static")
 
@@ -68,21 +92,45 @@ async def log_requests(request, call_next):
 # ---------------------------------------------------------------------------
 
 
-@app.get("/")
-async def index():
-    """Sirve la pagina HTML principal del dashboard."""
+@app.get("/", response_class=HTMLResponse)
+async def index(request: Request):
+    """
+    Sirve la pagina HTML principal del dashboard.
+
+    Inyecta un token de sesion (cookie + <meta>) para que solo el panel pueda
+    disparar la corrida manual. En la primera visita se deja la cookie; en las
+    siguientes se reusa la misma, asi el token es estable dentro de la sesion.
+    """
     index_path = _TEMPLATES_DIR / "index.html"
     if not index_path.is_file():
         raise HTTPException(status_code=404, detail="index.html no encontrado")
-    return FileResponse(
-        str(index_path),
-        media_type="text/html",
+
+    token = _token_de_sesion(request)
+    html = index_path.read_text(encoding="utf-8")
+    # El <meta> le da el token a app.js. El script del tema del <head> no depende
+    # de esto, asi que no se altera el comportamiento visual.
+    html = html.replace(
+        "</head>",
+        f'    <meta name="csrf-token" content="{token}">\n</head>',
+        1,
+    )
+
+    response = HTMLResponse(
+        content=html,
         headers={
             "Cache-Control": "no-cache, no-store, must-revalidate",
             "Pragma": "no-cache",
             "Expires": "0",
         },
     )
+    response.set_cookie(
+        _CSRF_COOKIE,
+        token,
+        httponly=True,      # el JS no necesita leer la cookie: ya tiene el <meta>
+        samesite="strict",  # no viaja desde otros sitios
+        path="/",
+    )
+    return response
 
 
 @app.get("/healthz")
@@ -156,9 +204,13 @@ async def api_todos():
 
 
 @app.post("/api/corrida")
-async def api_corrida():
+async def api_corrida(request: Request):
     """
     Lanza una corrida manual del worker en primer plano.
+
+    Requiere el token de sesion (doble envio): la cabecera X-CSRF-Token debe
+    coincidir con la cookie que el panel dejo al cargar la pagina. Un cliente
+    externo sin esa cookie recibe 403 (ver comentario de _CSRF_COOKIE).
 
     Ejecuta el worker como subproceso con el mismo interprete de Python.
     El frontend muestra un spinner mientras espera la respuesta.
@@ -167,6 +219,20 @@ async def api_corrida():
     (auto-refresh + click manual, o multiples pestañas). Si ya hay una
     corrida en curso, se rechaza con 409 Conflict.
     """
+    # --- Puerta de seguridad: solo el panel puede disparar la corrida ---
+    enviado = request.headers.get(_CSRF_HEADER)
+    esperado = request.cookies.get(_CSRF_COOKIE)
+    if not config.ACCION_TOKEN_REQUERIDO:
+        log.warning("ACCION_TOKEN_REQUERIDO=false: /api/corrida SIN proteccion")
+    elif not esperado or not enviado or not secrets.compare_digest(enviado, esperado):
+        # Sin cookie, sin cabecera, o no coinciden -> NO se corre nada.
+        # (Ojo: si ambos faltan, "enviado != esperado" seria FALSO y dejaria pasar;
+        #  por eso se exige que los dos existan antes de comparar.)
+        raise HTTPException(
+            status_code=403,
+            detail="Accion no autorizada: falta el token de sesion del panel.",
+        )
+
     if _corrida_lock.locked():
         raise HTTPException(
             status_code=409,

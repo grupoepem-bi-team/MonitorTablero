@@ -86,6 +86,52 @@ class TestAPITodos:
 
 
 class TestAPICorrida:
+    def test_corrida_sin_token_sesion_da_403(self, client):
+        """
+        Sin la cookie/meta del panel, la corrida manual se rechaza.
+
+        Es el caso del atacante en la red: puede llegar al puerto, pero no
+        dispara trabajo contra la API de Power BI.
+        """
+        r = client.post("/api/corrida")
+        assert r.status_code == 403
+        assert "no autorizada" in r.json()["detail"].lower()
+
+    def test_corrida_con_token_falso_da_403(self, client):
+        """Con cookie de sesion pero cabecera distinta -> 403 (no coincide)."""
+        client.cookies.set("monitor_csrf", "token-real")
+        r = client.post("/api/corrida", headers={"X-CSRF-Token": "otro-token"})
+        assert r.status_code == 403
+
+    def test_index_entrega_token_de_sesion(self, client):
+        """La pagina deja la cookie y el <meta> con el MISMO token."""
+        r = client.get("/")
+        assert r.status_code == 200
+        assert "monitor_csrf" in r.cookies
+        assert 'name="csrf-token"' in r.text
+        # El token del meta debe coincidir con la cookie
+        import re
+        m = re.search(r'name="csrf-token" content="([^"]+)"', r.text)
+        assert m, "el <meta> csrf-token no esta en el HTML"
+        assert m.group(1) == r.cookies["monitor_csrf"]
+
+    def test_corrida_con_token_valido_pasa(self, client, monkeypatch):
+        """El panel (cookie + meta iguales) SI puede lanzar la corrida."""
+        class FakeResult:
+            returncode = 0
+            stdout = "Corrida OK - 21 tableros"
+            stderr = ""
+
+        monkeypatch.setattr(
+            "frontend.server.subprocess.run",
+            lambda *a, **kw: FakeResult()
+        )
+        r = client.get("/")  # deja la cookie
+        token = client.cookies.get("monitor_csrf")
+        r = client.post("/api/corrida", headers={"X-CSRF-Token": token})
+        assert r.status_code == 200
+        assert r.json()["ok"] is True
+
     def test_corrida_sin_worker_real_mock_ok(self, client, monkeypatch):
         """Mockea subprocess.run para simular una corrida exitosa."""
         from frontend import server
@@ -99,7 +145,11 @@ class TestAPICorrida:
             "frontend.server.subprocess.run",
             lambda *a, **kw: FakeResult()
         )
-        r = client.post("/api/corrida")
+        client.get("/")  # cookie de sesion
+        r = client.post(
+            "/api/corrida",
+            headers={"X-CSRF-Token": client.cookies.get("monitor_csrf")},
+        )
         assert r.status_code == 200
         data = r.json()
         assert data["ok"] is True
@@ -116,7 +166,11 @@ class TestAPICorrida:
             "frontend.server.subprocess.run",
             lambda *a, **kw: FakeResult()
         )
-        r = client.post("/api/corrida")
+        client.get("/")
+        r = client.post(
+            "/api/corrida",
+            headers={"X-CSRF-Token": client.cookies.get("monitor_csrf")},
+        )
         assert r.status_code == 500
         assert "token" in r.json()["detail"].lower()
 
@@ -127,7 +181,11 @@ class TestAPICorrida:
             "frontend.server.subprocess.run",
             lambda *a, **kw: (_ for _ in ()).throw(subprocess.TimeoutExpired(cmd="x", timeout=1))
         )
-        r = client.post("/api/corrida")
+        client.get("/")
+        r = client.post(
+            "/api/corrida",
+            headers={"X-CSRF-Token": client.cookies.get("monitor_csrf")},
+        )
         assert r.status_code == 504
 
 

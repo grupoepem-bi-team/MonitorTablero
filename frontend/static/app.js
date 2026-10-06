@@ -20,7 +20,6 @@
     let saludData = null;
     let corriendo = false;
     let refreshTimer = null;
-    let notifiedSet = {};  // evita spam de notificaciones
 
     const ESTADOS_LATE = ["Demorado", "Error", "Advertencia"];
 
@@ -226,12 +225,16 @@
             return ra - rb;
         });
 
-        // KPIs
-        const nAtencion = late.length;
+        // KPIs — cada numero cuenta una COSA distinta, sin solaparse:
+        //   Demorado + Advertencia = tableros que requieren atencion (por separado)
+        //   Al dia  = OK
+        //   Total   = todos
+        const nDemorado = estadoData.filter(t => t.estado === "Demorado").length;
         const nAdvertencia = estadoData.filter(t => t.estado === "Advertencia").length;
+        const nError = estadoData.filter(t => t.estado === "Error").length;
         const nOk = estadoData.filter(t => t.estado === "OK").length;
         const nTotal = estadoData.length;
-        setKPIs(nAtencion, nAdvertencia, nOk, nTotal);
+        setKPIs(nDemorado + nError, nAdvertencia, nOk, nTotal);
 
         // Contadores de secciones
         const lateCount = document.getElementById("late-count");
@@ -242,17 +245,14 @@
         // Render tablas
         renderTabla("late-body", late);
         renderTabla("ok-body", ok);
-
-        // Notificaciones de criticos nuevos
-        detectarNuevosAtrasadosCriticos(late);
     }
 
-    function setKPIs(atencion, advertencia, ok, total) {
-        const elA = document.getElementById("kpi-atencion");
+    function setKPIs(demorado, advertencia, ok, total) {
+        const elD = document.getElementById("kpi-demorado");
         const elW = document.getElementById("kpi-advertencia");
         const elO = document.getElementById("kpi-aldia");
         const elT = document.getElementById("kpi-total");
-        if (elA) elA.textContent = String(atencion);
+        if (elD) elD.textContent = String(demorado);
         if (elW) elW.textContent = String(advertencia);
         if (elO) elO.textContent = String(ok);
         if (elT) elT.textContent = String(total);
@@ -304,35 +304,9 @@
     }
 
     // --- Notificaciones del navegador ---
-
-    function detectarNuevosAtrasadosCriticos(late) {
-        if (!late.length) {
-            notifiedSet = {};  // reset cuando todo vuelve a la normalidad
-            return;
-        }
-        for (const t of late) {
-            if (!t.critico) continue;
-            const key = t.tablero;
-            if (!notifiedSet[key]) {
-                notificarTablero(t);
-                notifiedSet[key] = true;
-            }
-        }
-    }
-
-    function notificarTablero(t) {
-        if (!("Notification" in window)) return;
-        if (Notification.permission === "granted") {
-            new Notification(`Tablero critico atrasado: ${t.tablero}`, {
-                body: `Estado: ${t.estado} - ${t.hace || ""}`,
-                icon: "/static/icons8-power-bi-50.ico",
-            });
-        } else if (Notification.permission !== "denied") {
-            Notification.requestPermission().then(p => {
-                if (p === "granted") notificarTablero(t);
-            });
-        }
-    }
+    // ELIMINADAS (orden de Emmanuel, 06/10/2026): el monitor NO avisa por ningun
+    // medio. Solo muestra el estado en pantalla. Si en el futuro se quiere avisar
+    // por Telegram, se hace en el backend (src/), no en el navegador.
 
     // --- Refresh automatico ---
 
@@ -347,11 +321,13 @@
 
     document.getElementById("btn-refresh").addEventListener("click", async () => {
         if (corriendo) return;
-        // Lanzar corrida manual
+        // Lanzar corrida manual (con el token de sesion que dejo el servidor en el <meta>)
         const btn = document.getElementById("btn-refresh");
         btn.classList.add("spinning");
         try {
-            const r = await fetch(API_CORRIDA, { method: "POST" });
+            const meta = document.querySelector('meta[name="csrf-token"]');
+            const headers = meta ? { "X-CSRF-Token": meta.getAttribute("content") } : {};
+            const r = await fetch(API_CORRIDA, { method: "POST", headers });
             if (!r.ok) {
                 const txt = await r.text();
                 console.error("Corrida manual fallo:", r.status, txt);
@@ -368,23 +344,34 @@
     cargar();
 
     // --- Dark Mode Toggle ---
+    // El tema se fija en el <head> (index.html) ANTES del CSS, para evitar el
+    // destello al cargar. Aca solo se refleja el estado en el boton y se maneja
+    // el clic. Regla: la eleccion del usuario SIEMPRE gana sobre la del sistema.
+    function aplicaTema(oscuro) {
+        const html = document.documentElement;
+        html.classList.toggle("dark", oscuro);
+        html.classList.toggle("light", !oscuro);
+        const btn = document.getElementById("btn-theme");
+        if (btn) btn.textContent = oscuro ? "☀️" : "🌙";
+    }
+
     const btnTheme = document.getElementById("btn-theme");
     if (btnTheme) {
-        const savedTheme = localStorage.getItem("monitor-theme");
-        const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-        const isDark = savedTheme === "dark" || (!savedTheme && prefersDark);
-
-        if (isDark) {
-            document.documentElement.classList.add("dark");
-            btnTheme.textContent = "☀️";
-        } else {
-            btnTheme.textContent = "🌙";
+        // Estado inicial: lo que ya dejo el script del <head>, o el sistema.
+        let oscuro = document.documentElement.classList.contains("dark");
+        if (!document.documentElement.classList.contains("dark")
+            && !document.documentElement.classList.contains("light")) {
+            oscuro = window.matchMedia
+                && window.matchMedia("(prefers-color-scheme: dark)").matches;
         }
+        aplicaTema(!!oscuro);
 
         btnTheme.addEventListener("click", () => {
-            const isDarkNow = document.documentElement.classList.toggle("dark");
-            localStorage.setItem("monitor-theme", isDarkNow ? "dark" : "light");
-            btnTheme.textContent = isDarkNow ? "☀️" : "🌙";
+            const oscuroAhora = !document.documentElement.classList.contains("dark");
+            aplicaTema(oscuroAhora);
+            try {
+                localStorage.setItem("monitor-theme", oscuroAhora ? "dark" : "light");
+            } catch (e) { /* sin localStorage: el tema no persiste, pero la UI funciona */ }
         });
     }
 })();

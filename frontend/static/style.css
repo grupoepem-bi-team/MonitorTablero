@@ -599,8 +599,12 @@ html, body {
 }
 
 /* ========== DARK MODE ========== */
+/* Oscuro automatico SOLO si el usuario no eligio tema (:not(.light)).
+   Asi la eleccion explicita del usuario ("claro") siempre gana sobre el sistema.
+   Sin el :not(.light), un PC en tema oscuro se quedaba oscuro aunque el usuario
+   pidiera claro: la clase "claro" era vacia y la media query ganaba (bug 06/10/2026). */
 @media (prefers-color-scheme: dark) {
-    :root {
+    html:not(.light) {
         --color-bg: #0f172a;
         --color-header-bg: #0f172a;
         --color-border: #334155;
@@ -618,34 +622,40 @@ html, body {
         --color-timeline-line: #475569;
     }
 
-    html, body { background: #0b1120; }
-    .app { background: #0b1120; }
+    html:not(.light) body { background: #0b1120; }
+    html:not(.light) .app { background: #0b1120; }
 
-    .data-table thead { background: #1e293b; border-bottom-color: #334155; }
-    .data-table tbody tr { border-bottom-color: #1e293b; }
-    .data-table tbody tr:hover { background: #1e293b; }
-    .timeline-track { background: #334155; }
-    .timeline-fill--ok { background: #34d399; }
-    .timeline-fill--advertencia { background: #fbbf24; }
-    .timeline-fill--demorado { background: #f87171; }
-    .timeline-fill--error { background: #64748b; }
-    .timeline-mark { background: #475569; }
-    .atraso-text--error { color: #94a3b8; }
+    html:not(.light) .data-table thead { background: #1e293b; border-bottom-color: #334155; }
+    html:not(.light) .data-table tbody tr { border-bottom-color: #1e293b; }
+    html:not(.light) .data-table tbody tr:hover { background: #1e293b; }
+    html:not(.light) .timeline-track { background: #334155; }
+    html:not(.light) .timeline-fill--ok { background: #34d399; }
+    html:not(.light) .timeline-fill--advertencia { background: #fbbf24; }
+    html:not(.light) .timeline-fill--demorado { background: #f87171; }
+    html:not(.light) .timeline-fill--error { background: #64748b; }
+    html:not(.light) .timeline-mark { background: #475569; }
+    html:not(.light) .atraso-text--error { color: #94a3b8; }
 
-    .btn-refresh { background: #1e293b; border-color: #334155; color: #f1f5f9; }
-    .btn-refresh:hover { background: #334155; border-color: #475569; }
-    .btn-refresh:active { background: #1e293b; }
+    html:not(.light) .btn-refresh { background: #1e293b; border-color: #334155; color: #f1f5f9; }
+    html:not(.light) .btn-refresh:hover { background: #334155; border-color: #475569; }
+    html:not(.light) .btn-refresh:active { background: #1e293b; }
 
-    .btn-theme { background: #1e293b; border-color: #334155; }
-    .btn-theme:hover { background: #334155; }
+    html:not(.light) .btn-theme { background: #1e293b; border-color: #334155; }
+    html:not(.light) .btn-theme:hover { background: #334155; }
 
-    .kpi-legend-bar { border-color: #334155; }
-    .loading-overlay { background: rgba(15, 23, 42, 0.8); }
-    .loading-spinner { border-color: #334155; border-top-color: #f1f5f9; }
+    html:not(.light) .kpi-legend-bar { border-color: #334155; }
+    html:not(.light) .loading-overlay { background: rgba(15, 23, 42, 0.8); }
+    html:not(.light) .loading-spinner { border-color: #334155; border-top-color: #f1f5f9; }
 
-    .section-count-ok { background: #334155; color: #94a3b8; }
-    .badge-cr { color: #f87171; border-color: #f87171; }
-    .col-arrow { color: #64748b; }
+    html:not(.light) .section-count-ok { background: #334155; color: #94a3b8; }
+    html:not(.light) .badge-cr { color: #f87171; border-color: #f87171; }
+    html:not(.light) .col-arrow { color: #64748b; }
+
+    /* Franja de salud: texto legible sobre los fondos oscuros */
+    html:not(.light) .salud-strip--warn { color: #fbbf24; }
+    html:not(.light) .salud-strip--danger { color: #f87171; }
+    html:not(.light) .header-live-badge--warn { color: #fbbf24; }
+    html:not(.light) .header-live-badge--danger { color: #f87171; }
 }
 
 /* ========== DARK MODE FORZADO POR CLASE ========== */

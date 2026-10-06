@@ -10,7 +10,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/style.css?v=2">
+    <!-- Tema: se fija ANTES del CSS para evitar el destello (FOUC).
+         El usuario manda: si eligio un tema, gana sobre el del sistema. -->
+    <script>
+        (function () {
+            try {
+                var guardado = localStorage.getItem("monitor-theme");
+                var sistemaOscuro = window.matchMedia
+                    && window.matchMedia("(prefers-color-scheme: dark)").matches;
+                var oscuro = guardado ? guardado === "dark" : sistemaOscuro;
+                document.documentElement.classList.add(oscuro ? "dark" : "light");
+            } catch (e) { /* sin localStorage: se usa el CSS base (claro) */ }
+        })();
+    </script>
+    <link rel="stylesheet" href="/static/style.css?v=3">
     <link rel="icon" type="image/x-icon" href="/static/icons8-power-bi-50.ico">
 </head>
 <body>
@@ -51,8 +64,8 @@
         <!-- KPI SUMMARY BAR -->
         <div class="kpi-bar" id="kpi-bar">
             <div class="kpi-item kpi-danger">
-                <span class="kpi-number" id="kpi-atencion">0</span>
-                <span class="kpi-label">Requieren atencion</span>
+                <span class="kpi-number" id="kpi-demorado">0</span>
+                <span class="kpi-label">Demorado</span>
             </div>
             <div class="kpi-divider"></div>
             <div class="kpi-item kpi-warning">
@@ -174,6 +187,6 @@
         </footer>
     </div>
 
-    <script src="/static/app.js?v=4"></script>
+    <script src="/static/app.js?v=5"></script>
 </body>
 </html>

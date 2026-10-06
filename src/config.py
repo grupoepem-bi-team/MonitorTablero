@@ -168,3 +168,22 @@ SALUD_FRESCURA_MIN = env_int("SALUD_FRESCURA_MIN", 35)
 
 SALUD_CAIDO_MIN = env_int("SALUD_CAIDO_MIN", 90)
 """Edad (min) a partir de la cual se considera caido/desactualizado (healthcheck 503)."""
+
+
+# ---------------------------------------------------------------------------
+# Proteccion de acciones que disparan trabajo real
+# ---------------------------------------------------------------------------
+
+ACCION_TOKEN_REQUERIDO = (
+    os.environ.get("ACCION_TOKEN_REQUERIDO", "true").strip().lower()
+    not in ("false", "0", "no", "off")
+)
+"""
+Exige el token de sesion del panel para POST /api/corrida (default: True).
+
+El panel deja una cookie y el mismo token en un <meta>; la pagina lo devuelve en
+la cabecera X-CSRF-Token. Sin eso, la corrida manual se rechaza con 403, para que
+ningun script externo pueda disparar consultas a la API de Power BI.
+
+Poner en false SOLO para diagnostico puntual (deja el endpoint abierto otra vez).
+"""

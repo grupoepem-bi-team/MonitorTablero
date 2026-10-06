@@ -175,13 +175,24 @@ def test_cambios_recientes_json_estructura():
     assert isinstance(data["lineas_fallos"], list)
 
 
-def test_meta_corrida_json_estructura():
-    import json
-    p = os.path.join(_ROOT, "corrida_monitor_meta.json")
-    if not os.path.isfile(p):
-        pytest.skip("meta_corrida no existe")
-    with open(p, encoding="utf-8") as f:
-        data = json.load(f)
+def test_meta_corrida_json_estructura(tmp_path, monkeypatch):
+    """
+    La meta de corrida debe tener las claves que consume el frontend.
+
+    NO se lee el corrida_monitor_meta.json del repo: es un artefacto de runtime
+    (gitignored) que puede quedar viejo o faltar, y hacia fallar el test por el
+    estado del disco y no por el codigo. Se genera una meta con la MISMA funcion
+    que usa produccion y se valida su estructura.
+    """
+    from src.persistencia import guardar_meta_corrida, leer_meta_corrida
+    from src import config
+
+    destino = tmp_path / "meta.json"
+    monkeypatch.setattr(config, "CORRIDA_MONITOR_META_JSON", str(destino))
+
+    guardar_meta_corrida(exito=True, duracion_s=2.5, n_tableros=21, n_cambios=3)
+    data = leer_meta_corrida()
+
     for k in ("exito", "n_tableros", "duracion_s"):
         assert k in data, f"meta_corrida sin '{k}'"
     assert isinstance(data["exito"], bool)
