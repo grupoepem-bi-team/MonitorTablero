@@ -6,9 +6,10 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      # Solo linux/amd64: el servidor 95 es x86 y NO tiene qemu para emular arm64.
+      # (El build multi-arquitectura rompia con "exec format error".)
       platforms:
         - linux/amd64
-        - linux/arm64
     container_name: dashboardcontrol-frontend
     ports:
       - "8070:8070"
