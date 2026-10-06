@@ -19,9 +19,9 @@
         <header class="header">
             <div class="header-left">
                 <h1 class="header-title">Monitor de Tableros</h1>
-                <span class="header-live-badge">
+                <span class="header-live-badge" id="live-badge">
                     <span class="live-dot"></span>
-                    En vivo
+                    <span id="live-badge-text">Auto</span>
                 </span>
             </div>
             <div class="header-center">
@@ -41,6 +41,12 @@
                 </button>
             </div>
         </header>
+
+        <!-- FRANJA DE SALUD DEL MONITOR (honestidad: avisa si el monitoreo o los datos estan viejos) -->
+        <div class="salud-strip salud-strip--ok" id="salud-strip">
+            <span class="salud-ico" id="salud-ico">&#9679;</span>
+            <span class="salud-text" id="salud-text">Verificando estado del monitor...</span>
+        </div>
 
         <!-- KPI SUMMARY BAR -->
         <div class="kpi-bar" id="kpi-bar">
@@ -168,6 +174,6 @@
         </footer>
     </div>
 
-    <script src="/static/app.js?v=3"></script>
+    <script src="/static/app.js?v=4"></script>
 </body>
 </html>

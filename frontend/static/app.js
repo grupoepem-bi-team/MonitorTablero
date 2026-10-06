@@ -17,6 +17,7 @@
     // --- Estado ---
     let estadoData = null;
     let metaData = null;
+    let saludData = null;
     let corriendo = false;
     let refreshTimer = null;
     let notifiedSet = {};  // evita spam de notificaciones
@@ -83,6 +84,67 @@
     /** Determina si un tablero esta "late" (requiere atencion) */
     function esLate(estado) { return ESTADOS_LATE.includes(estado); }
 
+    /** Formatea una edad en minutos a texto corto: "12 min", "1 h 5 min", "2 d 3 h". */
+    function fmtEdadMin(min) {
+        if (min === null || min === undefined || isNaN(min)) return "";
+        const m = Math.floor(min);
+        if (m < 1) return "menos de 1 min";
+        if (m < 60) return `${m} min`;
+        if (m < 1440) {
+            const h = Math.floor(m / 60);
+            const mm = m % 60;
+            return mm > 0 ? `${h} h ${mm} min` : `${h} h`;
+        }
+        const d = Math.floor(m / 1440);
+        const h = Math.floor((m % 1440) / 60);
+        return h > 0 ? `${d} d ${h} h` : `${d} d`;
+    }
+
+    /**
+     * Pinta la franja de salud del monitor (honestidad sobre la frescura del dato).
+     *   ok            -> verde discreto
+     *   desactualizado-> ambar (los datos pueden estar viejos)
+     *   caido         -> rojo (la ultima corrida fallo o es muy vieja)
+     *   sin_datos     -> ambar
+     */
+    function renderSalud() {
+        const strip = document.getElementById("salud-strip");
+        const ico = document.getElementById("salud-ico");
+        const txt = document.getElementById("salud-text");
+        const badge = document.getElementById("live-badge");
+        const badgeTxt = document.getElementById("live-badge-text");
+        if (!strip || !txt) return;
+
+        const s = saludData || {};
+        const codigo = s.codigo || "sin_datos";
+        const edad = fmtEdadMin(s.edad_min);
+        const cuando = edad ? `hace ${edad}` : "hora desconocida";
+        const fecha = fmtUltimaActualizacion(s.ultima_corrida_fin);
+
+        strip.classList.remove("salud-strip--ok", "salud-strip--warn", "salud-strip--danger");
+
+        if (codigo === "ok") {
+            strip.classList.add("salud-strip--ok");
+            if (ico) ico.textContent = "\u2713";
+            txt.textContent = `Monitor OK \u00b7 ultima corrida ${cuando}`;
+            if (badge) badge.classList.remove("header-live-badge--warn", "header-live-badge--danger");
+            if (badgeTxt) badgeTxt.textContent = "En vivo";
+        } else if (codigo === "desactualizado") {
+            strip.classList.add("salud-strip--warn");
+            if (ico) ico.textContent = "\u26a0";
+            txt.textContent = `Ultima corrida ${cuando} (${fecha}) \u00b7 los datos pueden estar desactualizados`;
+            if (badge) badge.classList.add("header-live-badge--warn");
+            if (badgeTxt) badgeTxt.textContent = "Demorado";
+        } else {
+            strip.classList.add("salud-strip--danger");
+            if (ico) ico.textContent = "\u26a0";
+            const detalle = s.error ? ` \u00b7 ${esc(s.error)}` : "";
+            txt.textContent = `Monitor caido: mostrando datos del ${fecha}${detalle}`;
+            if (badge) badge.classList.add("header-live-badge--danger");
+            if (badgeTxt) badgeTxt.textContent = "Datos viejos";
+        }
+    }
+
     // --- Reloj del header ---
 
     function actualizarReloj() {
@@ -111,6 +173,7 @@
             const d = await r.json();
             estadoData = d.estado;
             metaData = d.meta;
+            saludData = d.salud || null;
             const t1 = performance.now();
             const segundos = ((t1 - t0) / 1000).toFixed(1);
             const checkEl = document.getElementById("header-check");
@@ -130,6 +193,9 @@
     // --- Renderizado ---
 
     function render() {
+        // La franja de salud se pinta SIEMPRE, aun sin datos de tableros.
+        renderSalud();
+
         if (!estadoData || !Array.isArray(estadoData)) {
             // Mostrar vacio
             setKPIs(0, 0, 0, 0);

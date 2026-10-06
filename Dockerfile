@@ -38,9 +38,10 @@ COPY config_tableros.csv .
 
 EXPOSE 8070
 
-# Healthcheck: verifica que el servidor responde
+# Healthcheck: valida la ULTIMA CORRIDA (no solo que el server responda).
+# /healthz devuelve 200 si el pipeline esta sano; 503 (-> exit!=0) si esta caido.
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 --start-period=15s \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8070/api/todos', timeout=3)" || exit 1
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8070/healthz', timeout=3)" || exit 1
 
 # Comando: levantar el servidor web
 CMD ["uvicorn", "frontend.server:app", "--host", "0.0.0.0", "--port", "8070"]

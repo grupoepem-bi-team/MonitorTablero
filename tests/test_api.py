@@ -129,3 +129,55 @@ class TestAPICorrida:
         )
         r = client.post("/api/corrida")
         assert r.status_code == 504
+
+
+def _escribir_meta(tmp_path, hace_min, exito=True, error=None):
+    """Escribe un corrida_monitor_meta.json con la ultima corrida hecha hace N min."""
+    from datetime import datetime, timedelta
+
+    ts = datetime.now() - timedelta(minutes=hace_min)
+    meta = {
+        "version": 1,
+        "ultima_corrida_fin": ts.isoformat(),
+        "exito": exito,
+        "error": error,
+        "n_tableros": 21,
+        "n_cambios_estado": 0,
+    }
+    with open(os.path.join(str(tmp_path), "meta.json"), "w", encoding="utf-8") as f:
+        json.dump(meta, f)
+
+
+class TestHealthz:
+    """El healthcheck real valida la ULTIMA CORRIDA, no solo que el proceso viva."""
+
+    def test_sin_datos_da_503(self, client):
+        r = client.get("/healthz")
+        assert r.status_code == 503
+
+    def test_corrida_fresca_ok_da_200(self, client, tmp_path):
+        _escribir_meta(tmp_path, hace_min=1, exito=True)
+        r = client.get("/healthz")
+        assert r.status_code == 200
+        assert r.json()["codigo"] == "ok"
+
+    def test_corrida_fallida_da_503_aunque_sea_reciente(self, client, tmp_path):
+        # El caso del incidente: proceso vivo, corrida reciente, pero FALLO
+        _escribir_meta(tmp_path, hace_min=2, exito=False, error="token silencioso")
+        r = client.get("/healthz")
+        assert r.status_code == 503
+        assert r.json()["detail"]["codigo"] == "caido"
+
+    def test_corrida_vieja_da_503(self, client, tmp_path):
+        _escribir_meta(tmp_path, hace_min=500, exito=True)
+        r = client.get("/healthz")
+        assert r.status_code == 503
+
+
+class TestAPITodosSalud:
+    def test_api_todos_incluye_salud(self, client, tmp_path):
+        _escribir_meta(tmp_path, hace_min=1, exito=True)
+        r = client.get("/api/todos")
+        assert r.status_code == 200
+        assert "salud" in r.json()
+        assert r.json()["salud"]["codigo"] == "ok"

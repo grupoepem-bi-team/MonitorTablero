@@ -22,8 +22,9 @@ from fastapi.staticfiles import StaticFiles
 
 from src import config
 from src.logger import get_logger, log_frontend
-from src.persistencia import cargar_datos_para_frontend, leer_historico
+from src.persistencia import cargar_datos_para_frontend, leer_historico, leer_meta_corrida
 from src.metricas import calcular_metricas_completas
+from src.salud import calcular_salud, esta_sano
 
 log = get_logger(__name__)
 
@@ -84,6 +85,22 @@ async def index():
     )
 
 
+@app.get("/healthz")
+async def healthz():
+    """
+    Healthcheck REAL: valida la ULTIMA CORRIDA, no solo que el proceso viva.
+
+    Devuelve 200 si el monitor esta sano (ultima corrida exitosa y fresca).
+    Devuelve 503 si la ultima corrida fallo o esta desactualizada: asi Docker
+    marca el contenedor como unhealthy y deja de mentir "healthy" con el
+    pipeline caido (el fallo que dejo 2 semanas ciego al monitor, 23/09-06/10/2026).
+    """
+    salud = calcular_salud(leer_meta_corrida())
+    if not esta_sano(salud):
+        raise HTTPException(status_code=503, detail=salud)
+    return salud
+
+
 # ---------------------------------------------------------------------------
 # Endpoint principal de API (lectura de JSON del worker)
 # ---------------------------------------------------------------------------
@@ -92,12 +109,13 @@ async def index():
 @app.get("/api/todos")
 async def api_todos():
     """
-    Devuelve estado + cambios + meta + metricas en una sola llamada.
+    Devuelve estado + cambios + meta + metricas + salud en una sola llamada.
 
     Es el endpoint principal que usa el frontend para renderizar todo
     en una sola peticion, evitando multiples round-trips.
     """
     df, lineas_cambios, lineas_fallos, meta, err = cargar_datos_para_frontend()
+    salud = calcular_salud(meta)
 
     if df is None:
         return {
@@ -105,6 +123,7 @@ async def api_todos():
             "cambios": {"lineas_cambios_ui": lineas_cambios, "lineas_fallos": lineas_fallos},
             "meta": meta,
             "metricas": None,
+            "salud": salud,
             "error": err,
         }
 
@@ -126,6 +145,7 @@ async def api_todos():
             "tendencia": metricas["tendencia"],
             "fiabilidad": metricas["fiabilidad"],
         },
+        "salud": salud,
         "error": None,
     }
 

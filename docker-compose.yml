@@ -32,7 +32,9 @@ services:
       - TZ=America/Argentina/Buenos_Aires
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8070/api/todos', timeout=3)"]
+      # Healthcheck REAL: 200 solo si la ultima corrida fue exitosa y fresca.
+      # Un 503 (pipeline caido / datos viejos) hace fallar el comando -> unhealthy.
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8070/healthz', timeout=3)"]
       interval: 30s
       timeout: 5s
       retries: 3
@@ -65,8 +67,10 @@ services:
       - TZ=America/Argentina/Buenos_Aires
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "python -c \"import os; os.kill(1, 0)\""]
+      # Healthcheck REAL del scheduler: valida que la ULTIMA CORRIDA sea exitosa y
+      # fresca (no solo que el proceso siga vivo, que era lo que mentia antes).
+      test: ["CMD-SHELL", "python -c \"from src.salud import calcular_salud, esta_sano; from src.persistencia import leer_meta_corrida; import sys; sys.exit(0 if esta_sano(calcular_salud(leer_meta_corrida())) else 1)\""]
       interval: 30s
-      timeout: 5s
+      timeout: 10s
       retries: 3
       start_period: 15s

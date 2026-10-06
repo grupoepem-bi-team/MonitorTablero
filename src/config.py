@@ -157,3 +157,14 @@ MONITOR_MANUAL_TIMEOUT_S = env_int("MONITOR_MANUAL_TIMEOUT_SEC", 900)
 
 HISTORICO_MAX_CORRIDAS = env_int("HISTORICO_MAX_CORRIDAS", 1008)
 """Maximo de corridas a guardar en historico (default: 7 dias x 144 corridas/30min)."""
+
+
+# ---------------------------------------------------------------------------
+# Salud del propio monitor (para el healthcheck y la franja de la UI)
+# ---------------------------------------------------------------------------
+
+SALUD_FRESCURA_MIN = env_int("SALUD_FRESCURA_MIN", 35)
+"""Edad maxima (min) de la ultima corrida para considerarla fresca."""
+
+SALUD_CAIDO_MIN = env_int("SALUD_CAIDO_MIN", 90)
+"""Edad (min) a partir de la cual se considera caido/desactualizado (healthcheck 503)."""

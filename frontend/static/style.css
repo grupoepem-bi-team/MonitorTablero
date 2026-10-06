@@ -87,6 +87,45 @@ html, body {
     50% { opacity: 0.4; }
 }
 
+/* ========== FRANJA DE SALUD DEL MONITOR ========== */
+.salud-strip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 12px;
+    margin-bottom: 8px;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+}
+.salud-ico { font-size: 12px; line-height: 1; }
+.salud-strip--ok {
+    color: var(--color-success);
+    background: var(--color-success-light);
+    border-color: rgba(5, 150, 105, 0.25);
+}
+.salud-strip--warn {
+    color: #92400e;
+    background: var(--color-warning-light);
+    border-color: rgba(245, 158, 11, 0.35);
+}
+.salud-strip--danger {
+    color: var(--color-danger);
+    background: var(--color-danger-light);
+    border-color: rgba(220, 38, 38, 0.35);
+}
+.header-live-badge--warn {
+    color: #92400e;
+    background: var(--color-warning-light);
+}
+.header-live-badge--warn .live-dot { background: var(--color-warning); }
+.header-live-badge--danger {
+    color: var(--color-danger);
+    background: var(--color-danger-light);
+}
+.header-live-badge--danger .live-dot { background: var(--color-danger); }
+
 .header-center {
     display: flex;
     align-items: center;
@@ -651,6 +690,12 @@ html.dark .loading-spinner { border-color: #334155; border-top-color: #f1f5f9; }
 html.dark .section-count-ok { background: #334155; color: #94a3b8; }
 html.dark .badge-cr { color: #f87171; border-color: #f87171; }
 html.dark .col-arrow { color: #64748b; }
+
+/* Franja de salud en dark: texto legible sobre los fondos oscuros del dark theme */
+html.dark .salud-strip--warn { color: #fbbf24; }
+html.dark .salud-strip--danger { color: #f87171; }
+html.dark .header-live-badge--warn { color: #fbbf24; }
+html.dark .header-live-badge--danger { color: #f87171; }
 
 /* ========== THEME TOGGLE BUTTON ========== */
 .btn-theme {
